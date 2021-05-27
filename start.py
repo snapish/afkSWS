@@ -13,6 +13,7 @@ REGION = (960, 540, 1920, 1080)
 intervalMinimumSeconds = {"da": 10,"aggro": 290, "shark": 45,"loot": 45, "lootInterface": 300, "aers": 300, "ss": 30}
 sharkKey = "v"
 lootInterfaceKey = "m"
+daKey = "8"
 lastShark = 0
 lastLoot = 0
 
@@ -22,11 +23,7 @@ def main():
     
 
 def invManagement():
-   
-
-
-    attackLocations = pag.locateOnScreen(
-        'superattack.png', grayscale=True, confidence=0.7, region=REGION)
+    attackLocations = pag.locateOnScreen('superattack.png', grayscale=True, confidence=0.7, region=REGION)
     notepaperLocations = pag.locateOnScreen('./assets/notepaper/', grayscale=True, confidence=0.7, region=REGION)
 
     for i in pag.locateAllOnScreen('./assets/superattack.png', grayscale=False, confidence=0.8, region=REGION):
@@ -105,9 +102,14 @@ def checkLootInterface(lastinterface):
     else: return False
 
 def daJunk(lastda):
+    daList = checkItemExistence('./assets/da/', .6, True, 1, True)
     if checkItemExistence('./assets/da/', .6, True, 1, False) and time.time() - lastda > intervalMinimumSeconds["da"]:
         rs()
-        keyboard.press(daKey)
+        print('press da key')
+        #keyboard.press(daKey)
+        pag.move(pag.locateOnScreen(daList[0], grayscale=True, confidence=.6, region=REGION), duration= 1)
+        print('click da junk')
+
 
         
 

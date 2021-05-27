@@ -17,7 +17,7 @@ def checkItemExistence(path, conf, gray, matchesRequired, returnFilesList):
     image_list = []
     matchedImages = []
     matches = 0
-    directory = os.listdir(path)  # './notepaper'
+    directory = os.listdir(path)  # './assets/'
     for file in directory:
         if file.endswith('.png') or file.endswith('.jpg'):
             image_list.append(path + file)
