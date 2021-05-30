@@ -9,13 +9,22 @@ import os
 import concurrent.futures
 import keyboard
 import easygui
+import cv2
 
 
 REGION = (960, 540, 1920, 1080)
 # get input for a password that md5s against something probably
 # md5 things, prompt windows, pyautogui cheat sheet
-intervals = {"da": 10, "aggro": 290, "shark": 45, "loot": 15, "lootInterface": 300, "note": 25}
-last = {"da": 0, "aggro": 0, "shark": 0, "loot": 0, "interface": 0, "note": 0}
+intervals = {"da": 15, "aggro": 290, "shark": 30, "loot": 15, "lootInterface": 300, "note": 35}
+last = {}
+
+last["da"] = time.time()
+last["aggro"] = time.time()
+last["shark"] = time.time()
+last["loot"] = time.time()
+last["interface"] = time.time()
+last["note"] = time.time()
+
 
 sharkKey = "v"  # these will all be prompted variable inputs. For variablity
 lootInterfaceKey = "m"
@@ -26,25 +35,51 @@ aggroKey = "c"
 def main():
     try:
         while True:
+            invManagement()
             checkLootInterface(last["interface"])
             upkeepOverload(last["aggro"])
-            invManagement()
     except KeyboardInterrupt:
         print('press ctrl + c to exit')
 
 
 def invManagement():
     areaLoot(last["loot"])
-    daJunk(last["da"])
+    # daJunk(last["da"])
     chompSharks(last["shark"])
-    areaLoot(30)  # force an area loot before noting
-    # it will likely do str first but can end up on others first cuz of delays
+    areaLoot(last["loot"])  # force an area loot before noting
     notePotions(last["note"], './assets/NoteMe/superstrength.png')
     notePotions(last["note"], './assets/NoteMe/superdefence.png')
     notePotions(last["note"], './assets/NoteMe/superattack.png')
+    # it will likely do str first but can end up on others first cuz of delays
 
 
 #
+
+# returns true or false based on whether or not it noted pots
+# pass last["note"] for a legit check, or pass a number bigger number to force it
+# pass file as the path to the super pot image to check against
+def notePotions(lastnote, file):
+    if time.time() - lastnote > intervals["note"] + rand.randrange(1, 6):  # whenits time to note potions again
+        nps = os.listdir("./assets/notepaper")
+        for notepaperPicture in nps:
+            notepaperLocation = pag.locateOnScreen("./assets/notepaper/"+notepaperPicture, grayscale=False, confidence=0.6, region=REGION)
+            potLocation = pag.locateOnScreen(file, grayscale=False, confidence=0.55, region=REGION)
+            print(notepaperPicture)
+            print(notepaperLocation)
+            pag.moveTo(notepaperLocation, duration=1)
+            time.sleep(10)
+            adjust(6, 10)
+        # pag.click()
+            print('click notepaper')
+            pag.moveTo(potLocation, duration=1)
+            adjust(6, 10)
+            print('click pot')
+        # pag.click()  # add the check for "notepaper ->"
+            last["note"] = time.time()
+            return True
+        return False
+
+
 # Looks over all the files in the specified path to see if any are valid
 # Args: the path ('./notepaper'), the confidence interval (.55), whether or not its grayscale (True),
 # matchesrequired is how many matches in the dir it should have to find, returnFilesList is a boolean that changes the return from true to a list of matched images
@@ -60,7 +95,7 @@ def checkItemExistence(path, conf, gray, matchesRequired, returnFilesList):
         if file.endswith('.png') or file.endswith('.jpg'):  # if its a compatible image
             image_list.append(path + file)  # example: list[0]= "./assets/shark.png"
     for file in image_list:  # after it gets them all, for each one it found
-        if pag.locateOnScreen(file, grayscale=gray, confidence=conf, region=REGION) is not None:  # if it can find it on screen
+        if pag.locateOnScreen(file, grayscale=gray, confidence=conf, region=REGION):  # if it can find it on screen
             matches += 1  # add it to the matches count
     if matches >= matchesRequired and not returnFilesList:  # if the request had enough matches and the call didnt want an array returned
         return True
@@ -75,14 +110,14 @@ def chompSharks(lastshark):
     count = 0
     if time.time() - lastshark > intervals["shark"] + rand.randrange(2, 5):
         # go until all the sharks are chompt, or you've gone thru 5 times cuz then somethings probably wrong
-        while checkItemExistence('./assets/shark.png', .5, False, 1, False):
+        while checkItemExistence('./assets/', .5, False, 1, False):
             print('press shark key')
             # keyboard.press(sharkKey)
             last["shark"] = time.time()
             count += 1
-            if count > 4:
+            if count > 3:
                 break
-            sleep(rand.randrange(0.6, 1.2, 1))  # hang out for a tick or two
+            sleep(rand.uniform(.6, .8))  # hang out for a tick or two
 
 # done
 
@@ -90,7 +125,7 @@ def chompSharks(lastshark):
 def areaLoot(lastloot):
     if time.time() - lastloot > intervals["loot"]:
         rs()
-        # keyboard.press("space")
+        # keyboard.press("ctrl+space")
         print('pressed space to area loot')
         last["loot"] = time.time()
         return True
@@ -111,8 +146,10 @@ def upkeepOverload(lastovl):
     else:
         return False
 
-
+# done
 # see if its been a while since we re-openeed the loot interface, then press the loot interface key if it has
+
+
 def checkLootInterface(lastinterface):
     if time.time() - lastinterface > intervals["lootInterface"]:
         rs()
@@ -123,43 +160,26 @@ def checkLootInterface(lastinterface):
     else:
         return False
 
-
+# yikes
 # dissassembles anything inside the da folder, repeats until its all gone
+
+
 def daJunk(lastda):
     if time.time() - lastda > intervals["da"] and checkItemExistence('./assets/da/', .6, True, 1, False):
         daList = checkItemExistence('./assets/da/', .6, True, 1, True)
-        print(daList)
         if checkItemExistence('./assets/da/', .6, True, 1, False):
             for itemToDa in daList:
                 rs()
                 print('press da key')
                 # keyboard.press(daKey)
-                pag.move(pag.locateOnScreen(itemToDa, grayscale=False, confidence=.65, region=REGION), duration=1)
+                print('about to move to ', itemToDa)
+                moveTo = pag.locateOnScreen(itemToDa, grayscale=False, confidence=.6, region=REGION)
+                print(moveTo)
+                pag.move(moveTo, duration=1)
                 # pag.click()
                 adjust(4, 6)
                 print('clicked junk')
                 last["da"] = time.time()
-
-
-# returns true or false based on whether or not it noted pots
-# pass last["note"] for a legit check, or pass a number bigger number to force it
-# pass file as the path to the super pot image to check against
-def notePotions(lastnote, file):
-    if time.time() - lastnote > intervals["note"] + rand.randrange(1, 6):
-        notepaperList = checkItemExistence('./assets/notepaper/', .58, True, 2, True)
-        if len(notepaperList) >= 2:
-            for i in pag.locateAllOnScreen(file, grayscale=False, confidence=0.8, region=REGION):
-                pag.moveTo(notepaperList[0], duration=1)
-                adjust(6, 10)
-                # pag.click()
-                print('click notepaper')
-                pag.moveTo(i, duration=1)
-                adjust(6, 10)
-                print('click pot')
-                # pag.click()  # add the check for "notepaper ->"
-                last["note"] = time.time()
-                return True
-    return False
 
 
 def rs():
