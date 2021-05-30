@@ -1,64 +1,85 @@
 from operator import contains
 import pyautogui as pag
+import sys
 import random as rand
 import keyboard
 import cv2
 import os
 import concurrent.futures
 import time
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QCheckBox, QGridLayout, QLineEdit
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
 from time import sleep
-from tkinter import *
-from tkinter import ttk
 
 REGION = (960, 540, 1920, 1080)
-
-aggroPotTimer = ""
-sharkTimer = ""
-daTimer = ""
-noteTimer = ""
-areaLootTimer = ""
-daBool = False
-interfaceBool = False
 
 sharkKey = ""
 lootInterfaceKey = ""
 aggroPotKey = ""
 daKey = ""
+daBool = False
+
+
+def window():
+    app = QApplication(sys.argv)
+    widget = QWidget()
+    textLabel = QLabel(widget)
+    grid = QGridLayout()
+    widget.setLayout(grid)
+
+    sharkBox = QLineEdit()
+    lootInterfaceBox = QLineEdit()
+    aggroBox = QLineEdit()
+    daBox = QLineEdit()
+
+    aggroBox.setMaxLength(1)
+    aggroBox.setMaximumWidth(100)
+    aggroBox.setPlaceholderText("Aggro pot key")
+    sharkBox.setMaxLength(1)
+    sharkBox.setMaximumWidth(100)
+    sharkBox.setPlaceholderText("Eat shark key")
+    lootInterfaceBox.setMaxLength(1)
+    lootInterfaceBox.setMaximumWidth(100)
+    lootInterfaceBox.setPlaceholderText("Open area loot key")
+    daBox.setMaxLength(1)
+    daBox.setMaximumWidth(100)
+    daBox.setPlaceholderText("DA Key")
+
+    widget.setGeometry(1200, 500, 500, 500)
+    widget.setWindowTitle("Bot Config")
+    checkbox = QCheckBox(widget)
+    checkbox.setText("Disassemble Warpriest and junk")
+    grid.addWidget(sharkBox)
+    grid.addWidget(lootInterfaceBox)
+    grid.addWidget(daBox)
+    grid.addWidget(aggroBox)
+    grid.addWidget(checkbox)
+    grid.addWidget(textLabel)
+    checkbox.clicked.connect(toggleDa)
+
+    lootInterfaceBox.show()
+    daBox.show()
+    aggroBox.show()
+    sharkBox.show()
+    widget.show()
+    checkbox.show()
+    sys.exit(app.exec_())
 
 
 def main():
-    window = Tk()
-    window.title = "Toupin's Spiritual Warrior script"
-    window.geometry('500x500')
-    window.configure(background="goldenrod")
-    daBool = IntVar()
-    sharkLabel = Label(window, text="Shark keybind").grid(row=0, column=0)
-    sharkTextBox = Entry(window).grid(row=0, column=1)
-
-    lootInterfaceLabel = Label(window, text="Open loot interface keybind").grid(row=1, column=0)
-    lootInterfaceTextBox = Entry(window).grid(row=1, column=1)
-
-    aggroPotLabel = Label(window, text="Ovl / aggro pot keybind").grid(row=2, column=0)
-    aggroPotTextBox = Entry(window).grid(row=2, column=1)
-
-    # only show/enable this if they check the checkbox
-    daLabel = Label(window, text="Dissassemble keybind").grid(row=3, column=0)
-    daTextBox = Entry(window).grid(row=3, column=1)
-
-    daCheckbox = ttk.Checkbutton(window, text="Disassemble warpriest and junk", variable=daBool, command=toggleDa).grid(row=4, column=0)
-
-    ttk.Button(window, text="Start", command=takeInputs).grid()
-    window.mainloop()
+    pass
 
 
 def takeInputs():
     print(daBool)
-    pass
 
 
 def toggleDa():
+    global daBool
+    daBool ^= True
     print(daBool)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    window()
