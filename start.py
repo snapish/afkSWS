@@ -10,7 +10,7 @@ import concurrent.futures
 import keyboard
 import easygui
 import cv2
-
+from popup import window
 
 REGION = (960, 540, 1920, 1080)
 # get input for a password that md5s against something probably
@@ -194,4 +194,5 @@ def adjust(x, y):
 
 
 if __name__ == '__main__':
-    main()
+    if window():
+        main()
