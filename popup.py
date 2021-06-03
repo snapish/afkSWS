@@ -9,14 +9,15 @@ import cv2
 import os
 import concurrent.futures
 import time
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QCheckBox, QGridLayout, QLineEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QCheckBox, QGridLayout, QLineEdit, QLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 from time import sleep
 
 REGION = (960, 540, 1920, 1080)
 
-assignments = {"daKey": "", "sharkKey": "", "aggroKey": "", "lootInterfaceKey": "", "daBool": False}
+assignments = {"daKey": "", "sharkKey": "", "aggroKey": "",
+               "lootInterfaceKey": "", "daBool": False}
 validated = False
 topLeft = ()
 bottomRight = ()
@@ -25,7 +26,7 @@ bottomRight = ()
 def window():
     app = QApplication(sys.argv)
     widget = QWidget()
-
+    
     grid = QGridLayout()
     widget.setLayout(grid)
     sharkLabel = QLabel()
@@ -38,7 +39,8 @@ def window():
     daBox = QLineEdit()
     failedToValidateLabel = QLabel()
     continueButton = QPushButton()
-
+    
+    
     widget.setGeometry(1200, 500, 500, 500)
     widget.setWindowTitle("Bot Config")
 
@@ -50,7 +52,7 @@ def window():
 
     continueButton.setText("Continue")
     continueButton.clicked.connect(submit)
-
+    QLayout.setContentsMargins(0,0,0,0)
     aggroBox.setMaxLength(1)
     aggroBox.setMaximumWidth(100)
     aggroBox.setPlaceholderText("Aggro pot key")
@@ -72,6 +74,11 @@ def window():
     checkbox.clicked.connect(toggleDa)
     # grid.addWidget(failedToValidateLabel)
 
+    grid.setSpacing(0)
+    grid.setContentsMargins
+    daBox.setContentsMargins(-1,-1,-1,-1)
+    daLabel.setContentsMargins(-1,-1,-1,-1)
+    aggroBox.setContentsMargins(0,0,0,0)
     grid.addWidget(sharkBox, 0, 0,)
     grid.addWidget(sharkLabel, 0, 1)
     grid.addWidget(daBox, 1, 0)
@@ -106,8 +113,10 @@ def writeKeysToFile():
 
 def validateAssignments():
     flag = False
-    if assignments["sharkKey"] != "" and assignments["aggroPotKey"] != "" and assignments["lootInterfaceKey"] != "" and not assignments["daBool"]:  # if all the fields are filled in, only including the dissassemble key if they want to da things
-        if assignments["daBool"] and assignments["daKey"] != "":  # go to this line only if the keys have assignments.
+    # if all the fields are filled in, only including the dissassemble key if they want to da things
+    if assignments["sharkKey"] != "" and assignments["aggroPotKey"] != "" and assignments["lootInterfaceKey"] != "" and not assignments["daBool"]:
+        # go to this line only if the keys have assignments.
+        if assignments["daBool"] and assignments["daKey"] != "":
             flag = True  # mark everythign as good to go if they checked the dissassemble box, and the disassemble key is assigned
         elif not assignments["daBool"]:  # if the checkbox isnt checked
             flag = True  # were still good

@@ -8,7 +8,6 @@ import pyautogui as pag
 import os
 import concurrent.futures
 import keyboard
-import easygui
 import cv2
 from popup import window
 
@@ -35,11 +34,11 @@ aggroKey = "c"
 def main():
     try:
         while True:
-            invManagement()
             checkLootInterface(last["interface"])
+            invManagement()
             upkeepOverload(last["aggro"])
     except KeyboardInterrupt:
-        print('press ctrl + c to exit')
+        print('pressed ctrl + c to exit')
 
 
 def invManagement():
