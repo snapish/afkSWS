@@ -13,8 +13,10 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QCheckBo
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 from time import sleep
-
-REGION = (960, 540, 1920, 1080)
+#
+# checkboxes in popup for noting items in specific. example: note attack pot checkbox, str, def, etc.
+#
+REGION = (1600, 720, 350, 280)#(960, 540, 1920, 1080)
 
 assignments = {"daKey": "", "sharkKey": "", "aggroKey": "",
                "lootInterfaceKey": "", "daBool": False}
@@ -52,7 +54,7 @@ def window():
 
     continueButton.setText("Continue")
     continueButton.clicked.connect(submit)
-    QLayout.setContentsMargins(0,0,0,0)
+  #  QLayout.setContentsMargins(0,0,0,0)
     aggroBox.setMaxLength(1)
     aggroBox.setMaximumWidth(100)
     aggroBox.setPlaceholderText("Aggro pot key")
